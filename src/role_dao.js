@@ -33,6 +33,12 @@ class RoleDAO {
         await mysqlConnection.query(query, [role.id]);
         role.id = null;
     }
+
+    async getRoleId(title) {
+        const query = "SELECT id FROM roles WHERE title = ?";
+        let roleId = await mysqlConnection.query(query, [title]);
+        return roleId[0].id;
+    }
 }
 
 module.exports = new RoleDAO();
