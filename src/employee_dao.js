@@ -14,7 +14,15 @@ class EmployeeDAO {
         employee.firstName = row.first_name;
         employee.lastName = row.last_name;
         employee.id = row.id;
+        employee.roleId = row.roleId;
+        employee.managerId = row.managerId;
         return employee;
+    }
+
+    async getById(id) {
+        const query = "SELECT * FROM employees WHERE id = ?";
+        const data = await mysqlConnection.query(query, [id]);
+        return this.rowToObject(data[0]);
     }
 }
 
