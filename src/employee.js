@@ -1,4 +1,3 @@
-const employee_dao = require("./employee_dao");
 
 class Employee {
     id;
@@ -8,6 +7,7 @@ class Employee {
     managerId;
 
     async getManager() {
+        const employee_dao = require("./employee_dao");
         if (!this.managerId) {
             return null;
         } else {
