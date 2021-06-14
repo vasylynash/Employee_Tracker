@@ -41,6 +41,12 @@ class EmployeeDAO {
         await mysqlConnection.query(query, [employee.id]);
         employee.id = null;
     }
+
+    async findByName(firstName, lastName) {
+        const query = "SELECT * FROM employees WHERE first_name = ? AND last_name = ?";
+        const data = await mysqlConnection.query(query, [firstName, lastName]);
+        return this.rowToObject(data[0]);
+    }
 }
 
 module.exports = new EmployeeDAO();

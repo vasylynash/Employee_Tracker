@@ -34,7 +34,8 @@ const initialChoice = [{
         "Add role",
         "View roles",
         "Delete a role",
-        "View department budget"
+        "View department budget",
+        "Exit"
     ]
 }];
 

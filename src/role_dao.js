@@ -34,10 +34,10 @@ class RoleDAO {
         role.id = null;
     }
 
-    async getRoleId(title) {
-        const query = "SELECT id FROM roles WHERE title = ?";
-        let roleId = await mysqlConnection.query(query, [title]);
-        return roleId[0].id;
+    async findByTitle(title) {
+        const query = "SELECT * FROM roles WHERE title = ?";
+        let data = await mysqlConnection.query(query, [title]);
+        return this.rowToObject(data[0]);
     }
 }
 

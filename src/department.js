@@ -1,5 +1,4 @@
 
-
 class Department {
     id;
     name;
