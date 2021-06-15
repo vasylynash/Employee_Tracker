@@ -9,11 +9,7 @@ class Role {
             throw new Error("No department with the chosen id");
         }
         this.departmentId = department.id;
-    }
-
-
+    };
 }
-
-
 
 module.exports = Role;

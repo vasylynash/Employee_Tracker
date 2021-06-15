@@ -6,7 +6,7 @@ class RoleDAO {
         const query = "SELECT * FROM roles";
         const data = await mysqlConnection.query(query, {});
         return data.map(this.rowToObject);
-    }
+    };
 
     rowToObject(row) {
         const role = new Role();
@@ -15,7 +15,7 @@ class RoleDAO {
         role.id = row.id;
         role.departmentId = row.department_id;
         return role;
-    }
+    };
 
     async save(role) {
         if (!role.id) {
@@ -26,19 +26,19 @@ class RoleDAO {
             const query = "UPDATE roles SET title = ?, salary = ?, department.id = ? WHERE id = ?";
             await mysqlConnection.query(query, [role.title, role.salary, role.departmentId, role.id]);
         }
-    }
+    };
 
     async delete(role) {
         const query = "DELETE FROM roles WHERE id = ?";
         await mysqlConnection.query(query, [role.id]);
         role.id = null;
-    }
+    };
 
     async findByTitle(title) {
         const query = "SELECT * FROM roles WHERE title = ?";
         let data = await mysqlConnection.query(query, [title]);
         return this.rowToObject(data[0]);
-    }
+    };
 }
 
 module.exports = new RoleDAO();

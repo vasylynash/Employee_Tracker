@@ -12,7 +12,7 @@ class MysqlConnection {
             password: 'rootroot1!',
             database: 'employee_tracker_db',
         });
-    }
+    };
 
     query(query, params) {
         return new Promise((resolve, reject) => {
@@ -21,11 +21,11 @@ class MysqlConnection {
                 else resolve(res);
             })
         });
-    }
+    };
 
     end() {
         this.connection.end();
-    }
+    };
 
 }
 

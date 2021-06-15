@@ -2,11 +2,6 @@ const deparment_dao = require("./deparment_dao");
 const employee_dao = require("./employee_dao");
 const role_dao = require("./role_dao");
 
-// const employees = async function () {
-//     let arr = await employee_dao.getAll();
-//     return arr.map(el => [el.firstName, el.lastName].join(" ")).concat("None");
-// };
-
 const employees = async function () {
     let arr = await employee_dao.getAll();
     return arr.map(employee => ({
@@ -30,6 +25,7 @@ const departments = async function () {
         value: department
     }));;
 }
+
 module.exports = {
     initialChoice: [{
         type: "list",
@@ -64,18 +60,6 @@ module.exports = {
             message: "Enter employee's last name",
             name: "lastName",
         },
-        // {
-        //     type: "list",
-        //     message: "Select employee's role",
-        //     name: "role",
-        //     choices: roles,
-        // },
-        // {
-        //     type: "list",
-        //     message: "Select manager",
-        //     name: "manager",
-        //     choices: employees,
-        // }
     ],
 
     selectEmployee: [
@@ -87,15 +71,6 @@ module.exports = {
         }
     ],
 
-    // const updateEmployeeRoleSelection = [
-    //     {
-    //         type: "list",
-    //         message: "Select employee to update",
-    //         name: "employee",
-    //         choices: employees,
-    //     }
-    // ];
-
     selectRole: [
         {
             type: "list",
@@ -106,12 +81,6 @@ module.exports = {
     ],
 
     selectManager: [
-        // {
-        //     type: "list",
-        //     message: "Select employee to update",
-        //     name: "employee",
-        //     choices: employees,
-        // },
         {
             type: "list",
             message: "Select a manager",
@@ -149,28 +118,4 @@ module.exports = {
             name: "salary",
         }
     ],
-
-    // deleteRoleSelection: [
-    //     {
-    //         type: "list",
-    //         message: "Select role to delete",
-    //         name: "role",
-    //         choices: roles,
-    //     }
-    // ]
 }
-// module.exports = {
-//     initialChoice,
-//     addEmployeeQuestions,
-//     deleteEmployeeSelection,
-//     updateEmployeeRoleSelection,
-//     updateEmployeeManagerSelection,
-//     addDepartmentQuestions,
-//     deleteDepartmentSelection,
-//     addRoleQuestions,
-//     deleteRoleSelection,
-//     updateRoleSelection
-
-// }
-
-// module.exports = questions;

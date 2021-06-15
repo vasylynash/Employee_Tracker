@@ -15,7 +15,7 @@ class ReportsDAO {
 
         const data = await mysqlConnection.query(query, {});
         return data;
-    }
+    };
 
     async viewBudgets() {
         const query = `SELECT departments.name AS "Name", SUM(roles.salary) AS "Budget" FROM employee_tracker_db.employees
