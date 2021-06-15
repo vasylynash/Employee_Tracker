@@ -9,11 +9,15 @@ const Role = require("./role");
 const roleDAO = require("./role_dao");
 const employee_dao = require('./employee_dao');
 const Employee = require('./employee');
-const employeeQuestions = require('./questions').addEmployeeQuestions;
+// const employeeQuestions = require('./questions').addEmployeeQuestions;
 const initialChoice = require("./questions").initialChoice;
 const role_dao = require('./role_dao');
-const { addEmployeeQuestions, deleteEmployeeSelection, updateEmployeeRoleSelection, updateRoleSelection } = require('./questions');
+// const { addEmployeeQuestions, deleteEmployeeSelection, updateEmployeeRoleSelection, updateRoleSelection } = require('./questions');
 const reports_dao = require('./reports_dao');
+const questions = require("./questions");
+const { selectRole } = require('./questions');
+const deparment_dao = require('./deparment_dao');
+// const Employee = require("./employee");
 
 // (async () => {
 // console.log(JSON.stringify(await employeeDAO.getAll()));
@@ -64,19 +68,20 @@ const reports_dao = require('./reports_dao');
 
 class App {
 
-    addEmployee() {
-        inquirer.prompt(addEmployeeQuestions)
-            .then(async (answers) => {
-                const employee = new Employee();
-                employee.firstName = answers.firstName;
-                employee.lastName = answers.lastName;
-                employee.setRole(answers.role);
-                employee.setManager(answers.manager);
-                await employee_dao.save(employee);
-                console.table(await reports_dao.viewAll());
-                this.mainMenu();
-            })
-    }
+    // addEmployee() {
+    //     inquirer.prompt(addEmployeeQuestions)
+    //         .then(async (answers) => {
+    //             const employee = new Employee();
+    //             employee.firstName = answers.firstName;
+    //             employee.lastName = answers.lastName;
+    //             employee.setRole(answers.role);
+    //             employee.setManager(answers.manager);
+    //             await employee_dao.save(employee);
+    //             console.table(await reports_dao.viewAll());
+    //             this.mainMenu();
+    //         })
+    // }
+
 
     mainMenu() {
         inquirer
@@ -95,6 +100,12 @@ class App {
                     case "Update employee role":
                         this.updateEmployeeRole();
                         break;
+                    case "Update employee manager":
+                        this.updateManager();
+                        break;
+                    case "Add department":
+                        this.createDepartment();
+                        break;
                     case "Exit":
                         mysqlConnection.end();
                     default:
@@ -103,24 +114,36 @@ class App {
             })
     }
 
+    async addEmployee() {
+        const employee = new Employee();
+        let answers = await inquirer.prompt(questions.createEmployee);
+        employee.firstName = answers.firstName;
+        employee.lastName = answers.lastName;
+        answers = await inquirer.prompt(questions.selectRole);
+        employee.setRole(answers.role);
+        answers = await inquirer.prompt(questions.selectManager);
+        employee.setManager(answers.manager);
+        await employee_dao.save(employee);
+        this.mainMenu();
+    };
+
     deleteEmployee() {
-        inquirer.prompt(deleteEmployeeSelection).then(
-            answers => {
-                // console.log(answers);
+        inquirer.prompt(questions.selectEmployee).then(
+            async (answers) => {
                 if (answers.employee) {
-                    employee_dao.delete(answers.employee);
+                    await employee_dao.delete(answers.employee);
                 }
                 this.mainMenu();
             }
         );
-    }
+    };
 
     updateEmployeeRole() {
         let employee;
-        inquirer.prompt(updateEmployeeRoleSelection).then(answers => {
+        inquirer.prompt(questions.selectEmployee).then(answers => {
             if (answers.employee) {
                 employee = answers.employee;
-                inquirer.prompt(updateRoleSelection).then(async (answers) => {
+                inquirer.prompt(questions.selectRole).then(async (answers) => {
                     employee.setRole(answers.role);
                     await employee_dao.save(employee);
                     this.mainMenu();
@@ -129,6 +152,25 @@ class App {
                 this.mainMenu();
             }
         })
+    };
+
+    async updateManager() {
+        let answers = await inquirer.prompt(questions.selectEmployee);
+        const employee = answers.employee;
+        if (employee) {
+            answers = await inquirer.prompt(questions.selectManager);
+            employee.setManager(answers.manager);
+            await employee_dao.save(employee);
+        }
+        this.mainMenu();
+    }
+
+    async createDepartment() {
+        let answers = await inquirer.prompt(questions.createDepartment);
+        const department = new Department();
+        department.name = answers.name;
+        await deparment_dao.save(department);
+        this.mainMenu()
     }
 }
 
