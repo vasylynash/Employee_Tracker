@@ -120,15 +120,21 @@ class App {
                 case "View roles":
                     console.table(await role_dao.getAll());
                     break;
+                case "Delete a role":
+                    await this.deleteRole();
+                    break;
                 case "View employees by manager":
                     await this.findByManager();
+                    break;
+                case "View department budget":
+                    console.table(await reports_dao.viewBudgets());
                     break;
                 case "Exit":
                     await mysqlConnection.end();
                     return;
             }
         }
-    }
+    };
 
     async addEmployee() {
         const employee = new Employee();
@@ -169,14 +175,14 @@ class App {
             employee.setManager(answers.manager);
             await employee_dao.save(employee);
         }
-    }
+    };
 
     async createDepartment() {
         let answers = await inquirer.prompt(questions.createDepartment);
         const department = new Department();
         department.name = answers.name;
         await deparment_dao.save(department);
-    }
+    };
 
     async findByManager() {
         let answer = await inquirer.prompt(questions.selectManager);
@@ -185,12 +191,12 @@ class App {
                 return [employee.firstName + " " + employee.lastName]
             }));
         }
-    }
+    };
 
     async deleteDepartment() {
         let answer = await inquirer.prompt(questions.selectDepartment);
         await deparment_dao.delete(answer.department);
-    }
+    };
 
     async createRole() {
         let answers = await inquirer.prompt(questions.createRole);
@@ -202,7 +208,12 @@ class App {
         role.setDepartment(answers.department);
         console.log(role);
         await role_dao.save(role);
-    }
+    };
+
+    async deleteRole() {
+        let answers = await inquirer.prompt(questions.selectRole);
+        await role_dao.delete(answers.role);
+    };
 }
 
 module.exports = App;
