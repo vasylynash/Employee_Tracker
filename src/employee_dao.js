@@ -19,12 +19,6 @@ class EmployeeDAO {
         return employee;
     };
 
-    async getById(id) {
-        const query = "SELECT * FROM employees WHERE id = ?";
-        const data = await mysqlConnection.query(query, [id]);
-        return this.rowToObject(data[0]);
-    };
-
     async save(employee) {
         if (!employee.id) {
             const query = "INSERT INTO employees SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?";
@@ -40,12 +34,6 @@ class EmployeeDAO {
         const query = "DELETE FROM employees WHERE id = ?";
         await mysqlConnection.query(query, [employee.id]);
         employee.id = null;
-    };
-
-    async findByName(firstName, lastName) {
-        const query = "SELECT * FROM employees WHERE first_name = ? AND last_name = ?";
-        const data = await mysqlConnection.query(query, [firstName, lastName]);
-        return this.rowToObject(data[0]);
     };
 
     async findByManager(manager) {
