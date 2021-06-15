@@ -12,7 +12,7 @@ const Employee = require('./employee');
 const employeeQuestions = require('./questions').addEmployeeQuestions;
 const initialChoice = require("./questions").initialChoice;
 const role_dao = require('./role_dao');
-const { addEmployeeQuestions } = require('./questions');
+const { addEmployeeQuestions, deleteEmployeeSelection, updateEmployeeRoleSelection, updateRoleSelection } = require('./questions');
 const reports_dao = require('./reports_dao');
 
 // (async () => {
@@ -62,44 +62,74 @@ const reports_dao = require('./reports_dao');
 //         console.log(employee);
 //     })
 
+class App {
 
-function addEmployee() {
-    inquirer.prompt(addEmployeeQuestions)
-        .then(async (answers) => {
-            let title = answers.role;
-            let role = await role_dao.findByTitle(title);
-            let manager;
-            if (answers.manager === "None") {
-                manager = null;
-            } else {
-                let names = answers.manager.split(" ");
-                manager = await employee_dao.findByName(names[0], names[1]);
+    addEmployee() {
+        inquirer.prompt(addEmployeeQuestions)
+            .then(async (answers) => {
+                const employee = new Employee();
+                employee.firstName = answers.firstName;
+                employee.lastName = answers.lastName;
+                employee.setRole(answers.role);
+                employee.setManager(answers.manager);
+                await employee_dao.save(employee);
+                console.table(await reports_dao.viewAll());
+                this.mainMenu();
+            })
+    }
+
+    mainMenu() {
+        inquirer
+            .prompt(initialChoice)
+            .then(async (answer) => {
+                switch (answer.initialChoice) {
+                    case "Add employee":
+                        this.addEmployee();
+                        break;
+                    case "View all employees":
+                        console.table(await reports_dao.viewAll());
+                        break;
+                    case "Delete an employee":
+                        this.deleteEmployee();
+                        break;
+                    case "Update employee role":
+                        this.updateEmployeeRole();
+                        break;
+                    case "Exit":
+                        mysqlConnection.end();
+                    default:
+                        break;
+                }
+            })
+    }
+
+    deleteEmployee() {
+        inquirer.prompt(deleteEmployeeSelection).then(
+            answers => {
+                // console.log(answers);
+                if (answers.employee) {
+                    employee_dao.delete(answers.employee);
+                }
+                this.mainMenu();
             }
-            const employee = new Employee();
-            employee.firstName = answers.firstName;
-            employee.lastName = answers.lastName;
-            employee.setRole(role);
-            employee.setManager(manager);
-            await employee_dao.save(employee);
-            console.table(await reports_dao.viewAll());
+        );
+    }
+
+    updateEmployeeRole() {
+        let employee;
+        inquirer.prompt(updateEmployeeRoleSelection).then(answers => {
+            if (answers.employee) {
+                employee = answers.employee;
+                inquirer.prompt(updateRoleSelection).then(async (answers) => {
+                    employee.setRole(answers.role);
+                    await employee_dao.save(employee);
+                    this.mainMenu();
+                });
+            } else {
+                this.mainMenu();
+            }
         })
+    }
 }
 
-
-
-inquirer
-    .prompt(initialChoice)
-    .then(async (answer) => {
-        // console.log(answer);
-        switch (answer.initialChoice) {
-            case "Add employee":
-                addEmployee();
-
-                break;
-            case "View all employees":
-
-                console.table(await reports_dao.viewAll());
-            default:
-                break;
-        }
-    })
+module.exports = App;

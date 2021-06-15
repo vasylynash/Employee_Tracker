@@ -32,7 +32,7 @@ class EmployeeDAO {
             employee.id = data.insertId;
         } else {
             const query = "UPDATE employees SET first_name = ?, last_name = ?, role_id = ?, manager_id = ? WHERE id = ?";
-            await mysqlConnection.query(query, [employee.firstName, employee.lastName, employee.roleId, employee.managerId]);
+            await mysqlConnection.query(query, [employee.firstName, employee.lastName, employee.roleId, employee.managerId, employee.id]);
         }
     }
 

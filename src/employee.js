@@ -20,6 +20,7 @@ class Employee {
     setManager(employee) {
         if (!employee) {
             this.managerId = null;
+            return;
         }
         if (!employee.id) {
             throw new Error("Employee is not saved");

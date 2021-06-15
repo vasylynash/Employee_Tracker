@@ -2,19 +2,33 @@ const deparment_dao = require("./deparment_dao");
 const employee_dao = require("./employee_dao");
 const role_dao = require("./role_dao");
 
+// const employees = async function () {
+//     let arr = await employee_dao.getAll();
+//     return arr.map(el => [el.firstName, el.lastName].join(" ")).concat("None");
+// };
+
 const employees = async function () {
     let arr = await employee_dao.getAll();
-    return arr.map(el => [el.firstName, el.lastName].join(" ")).concat("None");
+    return arr.map(employee => ({
+        name: [employee.firstName, employee.lastName].join(" "),
+        value: employee
+    })).concat({ name: "None", value: null });
 };
 
 const roles = async function () {
     let arr = await role_dao.getAll();
-    return arr.map(el => el.title);
+    return arr.map(role => ({
+        name: role.title,
+        value: role
+    }));
 };
 
 const departments = async function () {
     let arr = await deparment_dao.getAll();
-    return arr.map(el => el.name);
+    return arr.map(department => ({
+        name: department.name,
+        value: department
+    }));;
 }
 
 const initialChoice = [{
@@ -82,6 +96,15 @@ const updateEmployeeRoleSelection = [
     }
 ];
 
+const updateRoleSelection = [
+    {
+        type: "list",
+        message: "Select new role",
+        name: "role",
+        choices: roles
+    }
+]
+
 const updateEmployeeManagerSelection = [
     {
         type: "list",
@@ -145,5 +168,7 @@ module.exports = {
     addDepartmentQuestions,
     deleteDepartmentSelection,
     addRoleQuestions,
-    deleteRoleSelection
+    deleteRoleSelection,
+    updateRoleSelection
+
 }
