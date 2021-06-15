@@ -83,35 +83,51 @@ class App {
     // }
 
 
-    mainMenu() {
-        inquirer
-            .prompt(initialChoice)
-            .then(async (answer) => {
-                switch (answer.initialChoice) {
-                    case "Add employee":
-                        this.addEmployee();
-                        break;
-                    case "View all employees":
-                        console.table(await reports_dao.viewAll());
-                        break;
-                    case "Delete an employee":
-                        this.deleteEmployee();
-                        break;
-                    case "Update employee role":
-                        this.updateEmployeeRole();
-                        break;
-                    case "Update employee manager":
-                        this.updateManager();
-                        break;
-                    case "Add department":
-                        this.createDepartment();
-                        break;
-                    case "Exit":
-                        mysqlConnection.end();
-                    default:
-                        break;
-                }
-            })
+    async mainMenu() {
+        while (true) {
+            let answer = await inquirer.prompt(initialChoice);
+
+            switch (answer.initialChoice) {
+                case "Add employee":
+                    await this.addEmployee();
+                    break;
+                case "View all employees":
+                    console.table(await reports_dao.viewAll());
+                    break;
+                case "Delete an employee":
+                    await this.deleteEmployee();
+                    break;
+                case "Update employee role":
+                    await this.updateEmployeeRole();
+                    break;
+                case "Update employee manager":
+                    await this.updateManager();
+                    break;
+                case "Add department":
+                    await this.createDepartment();
+                    break;
+                case "View all departments":
+                    console.table(["ID", "Name"], (await deparment_dao.getAll()).map(department => {
+                        return [department.id, department.name]
+                    }));
+                    break;
+                case "Delete a department":
+                    await this.deleteDepartment();
+                    break;
+                case "Add role":
+                    await this.createRole();
+                    break;
+                case "View roles":
+                    console.table(await role_dao.getAll());
+                    break;
+                case "View employees by manager":
+                    await this.findByManager();
+                    break;
+                case "Exit":
+                    await mysqlConnection.end();
+                    return;
+            }
+        }
     }
 
     async addEmployee() {
@@ -127,31 +143,22 @@ class App {
         this.mainMenu();
     };
 
-    deleteEmployee() {
-        inquirer.prompt(questions.selectEmployee).then(
-            async (answers) => {
-                if (answers.employee) {
-                    await employee_dao.delete(answers.employee);
-                }
-                this.mainMenu();
-            }
-        );
+    async deleteEmployee() {
+        let answers = await inquirer.prompt(questions.selectEmployee);
+        if (answers.employee) {
+            await employee_dao.delete(answers.employee);
+        }
     };
 
-    updateEmployeeRole() {
+    async updateEmployeeRole() {
         let employee;
-        inquirer.prompt(questions.selectEmployee).then(answers => {
-            if (answers.employee) {
-                employee = answers.employee;
-                inquirer.prompt(questions.selectRole).then(async (answers) => {
-                    employee.setRole(answers.role);
-                    await employee_dao.save(employee);
-                    this.mainMenu();
-                });
-            } else {
-                this.mainMenu();
-            }
-        })
+        let answers = await inquirer.prompt(questions.selectEmployee);
+        if (answers.employee) {
+            employee = answers.employee;
+            answers = await inquirer.prompt(questions.selectRole);
+            employee.setRole(answers.role);
+            await employee_dao.save(employee);
+        }
     };
 
     async updateManager() {
@@ -162,7 +169,6 @@ class App {
             employee.setManager(answers.manager);
             await employee_dao.save(employee);
         }
-        this.mainMenu();
     }
 
     async createDepartment() {
@@ -170,7 +176,32 @@ class App {
         const department = new Department();
         department.name = answers.name;
         await deparment_dao.save(department);
-        this.mainMenu()
+    }
+
+    async findByManager() {
+        let answer = await inquirer.prompt(questions.selectManager);
+        if (answer.manager) {
+            console.table(["Name"], (await employee_dao.findByManager(answer.manager)).map(employee => {
+                return [employee.firstName + " " + employee.lastName]
+            }));
+        }
+    }
+
+    async deleteDepartment() {
+        let answer = await inquirer.prompt(questions.selectDepartment);
+        await deparment_dao.delete(answer.department);
+    }
+
+    async createRole() {
+        let answers = await inquirer.prompt(questions.createRole);
+        const role = new Role();
+        role.title = answers.title;
+        role.salary = answers.salary;
+        answers = await inquirer.prompt(questions.selectDepartment);
+        console.log(answers);
+        role.setDepartment(answers.department);
+        console.log(role);
+        await role_dao.save(role);
     }
 }
 

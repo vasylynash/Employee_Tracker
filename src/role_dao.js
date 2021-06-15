@@ -13,18 +13,18 @@ class RoleDAO {
         role.title = row.title;
         role.salary = row.salary;
         role.id = row.id;
-        role.department_id = row.department_id;
+        role.departmentId = row.department_id;
         return role;
     }
 
     async save(role) {
         if (!role.id) {
             const query = "INSERT INTO roles SET ?";
-            const data = await mysqlConnection.query(query, { title: role.title, salary: role.salary, department_id: role.department_id });
+            const data = await mysqlConnection.query(query, { title: role.title, salary: role.salary, department_id: role.departmentId });
             role.id = data.insertId;
         } else {
             const query = "UPDATE roles SET title = ?, salary = ?, department.id = ? WHERE id = ?";
-            await mysqlConnection.query(query, [role.title, role.salary, role.department_id, role.id]);
+            await mysqlConnection.query(query, [role.title, role.salary, role.departmentId, role.id]);
         }
     }
 

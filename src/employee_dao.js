@@ -47,6 +47,12 @@ class EmployeeDAO {
         const data = await mysqlConnection.query(query, [firstName, lastName]);
         return this.rowToObject(data[0]);
     }
+
+    async findByManager(manager) {
+        const query = "SELECT * FROM employees WHERE manager_id = ?;"
+        const data = await mysqlConnection.query(query, [manager.id]);
+        return data.map(this.rowToObject);
+    }
 }
 
 module.exports = new EmployeeDAO();
