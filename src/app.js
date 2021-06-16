@@ -134,9 +134,7 @@ class App {
         role.title = answers.title;
         role.salary = answers.salary;
         answers = await inquirer.prompt(questions.selectDepartment);
-        console.log(answers);
         role.setDepartment(answers.department);
-        console.log(role);
         await role_dao.save(role);
     };
 
