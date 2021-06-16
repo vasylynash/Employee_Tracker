@@ -18,7 +18,7 @@ class ReportsDAO {
     };
 
     async viewBudgets() {
-        const query = `SELECT departments.name AS "Name", SUM(roles.salary) AS "Budget" FROM employee_tracker_db.employees
+        const query = `SELECT departments.name AS "Name", SUM(roles.salary) AS "Budget" FROM employees
         JOIN roles ON roles.id = employees.role_id
         RIGHT JOIN departments ON roles.department_id = departments.id
         GROUP BY departments.name;`;
