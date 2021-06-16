@@ -76,7 +76,6 @@ class App {
         answers = await inquirer.prompt(questions.selectManager);
         employee.setManager(answers.manager);
         await employee_dao.save(employee);
-        this.mainMenu();
     };
 
     async deleteEmployee() {
